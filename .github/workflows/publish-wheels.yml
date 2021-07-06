@@ -63,7 +63,9 @@ jobs:
     # ...
       
     - name: Run pip install
-      run: python -m pip install . --use-feature=in-tree-build
+      run: |
+        cd football
+        python -m pip install . --use-feature=in-tree-build
 #     - name: Build package
 #       run: python -m build
 #     - name: Publish package
