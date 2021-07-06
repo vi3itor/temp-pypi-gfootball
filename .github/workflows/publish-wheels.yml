@@ -53,12 +53,10 @@ jobs:
       run: find $RUNNER_WORKSPACE
       shell: bash
       
-    - name: Bootstrap vcpkg if cache failed
+    - name: Bootstrap vcpkg and install packages if cache failed
       if: steps.cache-vcpkg.outputs.cache-hit != 'true'
-      run: ${{ env.VCPKG_ROOT }}\bootstrap-vcpkg.bat
-
-    - name: Install necessary packages
       run: |
+        ${{ env.VCPKG_ROOT }}\bootstrap-vcpkg.bat
         ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
         ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
 
