@@ -26,23 +26,26 @@ jobs:
       with:
         path: football
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-    - name: Upgrade pip and essential dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build setuptools psutil wheel
+#    - name: Set up Python
+#      uses: actions/setup-python@v2
+#      with:
+#        python-version: '3.9'
+#    - name: Upgrade pip and essential dependencies
+#      run: |
+#        python -m pip install --upgrade pip
+#        pip install build setuptools psutil wheel
 
     - name:  Restore vcpkg libs from cache
       id: cache-vcpkg
       uses: actions/cache@v2
       with:
         path: |
-          ${{ env.VCPKG_ROOT }}/installed
-          ${{ env.VCPKG_ROOT }}/scripts
-        key: ${{ runner.os }}-py3.9-alpha  # -${{ hashFiles('CMakeLists.txt') }}
+          ${{ env.VCPKG_ROOT }}
+          !${{ env.VCPKG_ROOT }}/buildtrees
+          !${{ env.VCPKG_ROOT }}/downloads
+          !${{ env.VCPKG_ROOT }}/packages
+        key: ${{ runner.os }}-py3.9-beta  # -${{ hashFiles('CMakeLists.txt') }}
+
     - name: Checkout vcpkg if cache failed
       if: steps.cache-vcpkg.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
@@ -66,10 +69,10 @@ jobs:
       shell: bash
     # ...
       
-    - name: Run pip install
-      run: |
-        cd football
-        python -m pip install . --use-feature=in-tree-build
+#    - name: Run pip install
+#      run: |
+#        cd football
+#        python -m pip install . --use-feature=in-tree-build -v
 
 #     - name: Build package
 #       run: python -m build
