@@ -49,11 +49,15 @@ jobs:
       with:
         repository: microsoft/vcpkg
         path: vcpkg-py3.9  #vcpkg-py{{python-version}}
+    - name: Show content of workspace after cache has been restored
+      run: find $RUNNER_WORKSPACE
+      shell: bash
       
     - name: Bootstrap vcpkg and install packages if cache failed
       if: steps.cache-vcpkg.outputs.cache-hit != 'true'
       run: |
-        ${{ env.VCPKG_ROOT }}/vcpkg install zlib
+        ${{ env.VCPKG_ROOT }}/bootstrap-vcpkg.bat
+        ${{ env.VCPKG_ROOT }}/vcpkg.exe install zlib
 
     - name: Show content of workspace after cache has been restored
       run: find $RUNNER_WORKSPACE
