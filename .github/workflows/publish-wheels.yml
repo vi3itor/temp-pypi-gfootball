@@ -25,14 +25,14 @@ jobs:
     - uses: actions/checkout@v2
       with:
         path: football
-#     - name: Set up Python
-#       uses: actions/setup-python@v2
-#       with:
-#         python-version: '3.9'
-#     - name: Upgrade pip and essential dependencies
-#       run: |
-#         python -m pip install --upgrade pip
-#         pip install build setuptools psutil wheel
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Upgrade pip and essential dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build setuptools psutil wheel
     - name:  Restore vcpkg libs from cache
       id: cache-vcpkg
       uses: actions/cache@v2
@@ -62,13 +62,10 @@ jobs:
         ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
         ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
 
-    - name: Show content of workspace again
-      run: find $RUNNER_WORKSPACE
-      shell: bash
     # ...
       
-#     - name: Run install
-#       run: python -m pip install . --use-feature=in-tree-build
+    - name: Run pip install
+      run: python -m pip install . --use-feature=in-tree-build
 #     - name: Build package
 #       run: python -m build
 #     - name: Publish package
