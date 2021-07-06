@@ -8,27 +8,60 @@
 
 name: Upload Python Wheels
 
-on:
-  release:
-    types: [published]
+on: push
+#   release:
+#     types: [published]
 
 jobs:
   deploy:
-
+    
     runs-on: windows-latest
-
+    
+    env:
+      # Indicates the location of the vcpkg as a Git submodule of the project repository.
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg-py3.9    
+    
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
-    - name: Install dependencies
+        path: football
+#     - name: Set up Python
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: '3.9'
+#     - name: Upgrade pip and essential dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         pip install build setuptools psutil wheel
+    - name:  Restore vcpkg libs from cache
+      id: cache-vcpkg
+      uses: actions/cache@v2
+      with:
+        path: | 
+          ${{ env.VCPKG_ROOT }}
+          !${{ env.VCPKG_ROOT }}/buildtrees
+          !${{ env.VCPKG_ROOT }}/packages
+          !${{ env.VCPKG_ROOT }}/downloads
+        key: ${{ runner.os }}-py3.9  # ${{ hashFiles('CMakeLists.txt') }}
+    - name: Checkout vcpkg if cache failed
+      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        repository: microsoft/vcpkg
+        path: vcpkg-py3.9  #vcpkg-py{{python-version}}
+      
+    - name: Bootstrap vcpkg and install packages if cache failed
+      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
       run: |
-        python -m pip install --upgrade pip
-        pip install build setuptools psutil wheel
-    - name: Run install
-      run: python -m pip install . --use-feature=in-tree-build -v
+        ${{ env.VCPKG_ROOT }}/vcpkg install zlib
+
+    - name: Show content of workspace after cache has been restored
+      run: find $RUNNER_WORKSPACE
+      shell: bash
+    # ...
+      
+#     - name: Run install
+#       run: python -m pip install . --use-feature=in-tree-build
 #     - name: Build package
 #       run: python -m build
 #     - name: Publish package
