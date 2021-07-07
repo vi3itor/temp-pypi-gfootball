@@ -21,8 +21,7 @@ jobs:
         python-version: [ 3.8, 3.9 ]
         include:
           - python-version: 3.8
-            # TODO: replace with long hash
-            vcpkg-ref: e803bf112
+            vcpkg-ref: e803bf11296d8e7900dafb41e7b1224778d33dc6
           - python-version: 3.9
             vcpkg-ref: a0fa6aeb82b3956a2f52ec455061ba1916076d53
 
