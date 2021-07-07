@@ -26,47 +26,34 @@ jobs:
       with:
         path: football
 
-#    - name: Set up Python
-#      uses: actions/setup-python@v2
-#      with:
-#        python-version: '3.9'
-#    - name: Upgrade pip and essential dependencies
-#      run: |
-#        python -m pip install --upgrade pip
-#        pip install build setuptools psutil wheel
-
-    - name:  Create a new shiny vcpkg cache to workaround existing bug
-      id: cache-vcpkg-installs
-      uses: actions/cache@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        path: |
-          ${{ env.VCPKG_ROOT }}/installed
-        key: ${{ runner.os }}-py3.9-gamma  # -${{ hashFiles('CMakeLists.txt') }}
+        python-version: '3.9'
+    - name: Upgrade pip and essential dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build setuptools psutil wheel
 
-    - name:  Restore vcpkg libs from cache
-      id: cache-vcpkg
-      uses: actions/cache@v2
-      with:
-        path: |
-          ${{ env.VCPKG_ROOT }}
-          !${{ env.VCPKG_ROOT }}/buildtrees
-          !${{ env.VCPKG_ROOT }}/downloads
-          !${{ env.VCPKG_ROOT }}/packages
-        key: ${{ runner.os }}-py3.9-beta  # -${{ hashFiles('CMakeLists.txt') }}
-
-    - name: Checkout vcpkg if cache failed
-      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+    - name: Checkout vcpkg
       uses: actions/checkout@v2
       with:
         repository: microsoft/vcpkg
         path: vcpkg-py3.9  #vcpkg-py{{python-version}}
 
-    - name: Show content of workspace after cache has been restored
-      run: find $RUNNER_WORKSPACE
-      shell: bash
+    - name: Restore vcpkg cache #workaround existing bug
+      id: cache-vcpkg
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.VCPKG_ROOT }}/installed
+        key: ${{ runner.os }}-py3.9-gamma  # -${{ hashFiles('CMakeLists.txt') }}
+
+#    - name: Show content of workspace after cache has been restored
+#      run: find $RUNNER_WORKSPACE
+#      shell: bash
       
-    - name: Bootstrap vcpkg and install packages #if cache failed
-#      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+    - name: Bootstrap vcpkg and install packages if cache failed
+      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
       run: |
         ${{ env.VCPKG_ROOT }}\bootstrap-vcpkg.bat
         ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
@@ -76,10 +63,10 @@ jobs:
       run: find $RUNNER_WORKSPACE
       shell: bash
       
-#    - name: Run pip install
-#      run: |
-#        cd football
-#        python -m pip install . --use-feature=in-tree-build -v
+    - name: Run pip install
+      run: |
+        cd football
+        python -m pip install . --use-feature=in-tree-build -v
 
 #     - name: Build package
 #       run: python -m build
