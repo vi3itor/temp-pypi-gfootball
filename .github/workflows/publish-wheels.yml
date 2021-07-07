@@ -18,12 +18,14 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [ 3.8, 3.9 ]
+        python-version: [ 3.7 ] #, 3.8, 3.9 ]
         include:
-          - python-version: 3.8
-            vcpkg-ref: e803bf11296d8e7900dafb41e7b1224778d33dc6
-          - python-version: 3.9
-            vcpkg-ref: a0fa6aeb82b3956a2f52ec455061ba1916076d53
+          - python-version: 3.7
+            vcpkg-ref: ca52d429b63391cbf7eb228cad4c7567200bee41
+#           - python-version: 3.8
+#             vcpkg-ref: e803bf11296d8e7900dafb41e7b1224778d33dc6
+#           - python-version: 3.9
+#             vcpkg-ref: a0fa6aeb82b3956a2f52ec455061ba1916076d53
 
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg-py${{ matrix.python-version }}
@@ -60,7 +62,8 @@ jobs:
       with:
         path: ${{ env.VCPKG_ROOT }}/installed
         # TODO: add vcpkg-py-${{ matrix.python-version }}
-        key: ${{ runner.os }}-py${{ matrix.python-version }}-gamma  # -${{ hashFiles('CMakeLists.txt') }}
+        # key: ${{ runner.os }}-py${{ matrix.python-version }}-gamma  # -${{ hashFiles('CMakeLists.txt') }}
+        key: ${{ runner.os }}-py${{ matrix.python-version }}-gfx-test
 
 #    - name: Show content of workspace after cache has been restored
 #      run: find $RUNNER_WORKSPACE
@@ -70,8 +73,10 @@ jobs:
       if: steps.cache-vcpkg.outputs.cache-hit != 'true'
       run: |
         ${{ env.VCPKG_ROOT }}\bootstrap-vcpkg.bat
-        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
-        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
+        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows sdl2-gfx
+        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows sdl2-gfx
+#        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
+#        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
       
 #    - name: Run pip install
 #      run: |
