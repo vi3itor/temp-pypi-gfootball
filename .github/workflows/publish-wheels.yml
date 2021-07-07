@@ -19,11 +19,13 @@ jobs:
     strategy:
       matrix:
         python-version: [ 3.8, 3.9 ]
-    
+    env:
+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg-py${{ matrix.python-version }}
+
     steps:
-    - name: Set VCPKG_ROOT environment variable
-      env:
-        VCPKG_ROOT: ${{ github.workspace }}/vcpkg-py${{ matrix.python-version }}
+    - name: Print VCPKG_ROOT environment variable
+      run: echo $VCPKG_ROOT
+      shell: bash
 
     - uses: actions/checkout@v2
       with:
