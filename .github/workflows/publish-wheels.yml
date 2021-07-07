@@ -35,6 +35,14 @@ jobs:
 #        python -m pip install --upgrade pip
 #        pip install build setuptools psutil wheel
 
+    - name:  Create a new shiny vcpkg cache to workaround existing bug
+      id: cache-vcpkg-installs
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ env.VCPKG_ROOT }}/installed
+        key: ${{ runner.os }}-py3.9-gamma  # -${{ hashFiles('CMakeLists.txt') }}
+
     - name:  Restore vcpkg libs from cache
       id: cache-vcpkg
       uses: actions/cache@v2
@@ -57,12 +65,12 @@ jobs:
       run: find $RUNNER_WORKSPACE
       shell: bash
       
-    - name: Bootstrap vcpkg and install packages if cache failed
+    - name: Bootstrap vcpkg and install packages #if cache failed
 #      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
       run: |
         ${{ env.VCPKG_ROOT }}\bootstrap-vcpkg.bat
-        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost-thread boost-filesystem boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
-        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost-thread boost-filesystem boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
+        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost-thread boost-filesystem boost-signal2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
+        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost-thread boost-filesystem boost-signal2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
 
     - name: Show content of workspace after packages have been installed
       run: find $RUNNER_WORKSPACE
