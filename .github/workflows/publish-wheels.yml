@@ -19,6 +19,13 @@ jobs:
     strategy:
       matrix:
         python-version: [ 3.8, 3.9 ]
+        include:
+          - python-version: 3.8
+            # TODO: replace with long hash
+            vcpkg-ref: e803bf112
+          - python-version: 3.9
+            vcpkg-ref: a0fa6aeb82b3956a2f52ec455061ba1916076d53
+
     env:
       VCPKG_ROOT: ${{ github.workspace }}/vcpkg-py${{ matrix.python-version }}
 
@@ -41,11 +48,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install build setuptools psutil wheel
 
-#    - name: Checkout vcpkg
-#      uses: actions/checkout@v2
-#      with:
-#        repository: microsoft/vcpkg
-#        path: vcpkg-py${{ matrix.python-version }}
+    - name: Checkout vcpkg
+      uses: actions/checkout@v2
+      with:
+        repository: microsoft/vcpkg
+        ref: ${{ matrix.vcpkg-ref }}
+        path: vcpkg-py${{ matrix.python-version }}
 #
 #    - name: Restore vcpkg cache
 #      id: cache-vcpkg
