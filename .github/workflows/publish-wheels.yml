@@ -33,19 +33,19 @@ jobs:
       run: echo $VCPKG_ROOT
       shell: bash
 
-    - uses: actions/checkout@v2
-      with:
-        path: football
-
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Upgrade pip and essential dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build setuptools psutil wheel
+#    - uses: actions/checkout@v2
+#      with:
+#        path: football
+#
+#    - name: Set up Python
+#      uses: actions/setup-python@v2
+#      with:
+#        python-version: ${{ matrix.python-version }}
+#
+#    - name: Upgrade pip and essential dependencies
+#      run: |
+#        python -m pip install --upgrade pip
+#        pip install build setuptools psutil wheel
 
     - name: Checkout vcpkg
       uses: actions/checkout@v2
@@ -53,25 +53,25 @@ jobs:
         repository: microsoft/vcpkg
         ref: ${{ matrix.vcpkg-ref }}
         path: vcpkg-py${{ matrix.python-version }}
-#
-#    - name: Restore vcpkg cache
-#      id: cache-vcpkg
-#      uses: actions/cache@v2
-#      with:
-#        path: ${{ env.VCPKG_ROOT }}/installed
-#        # TODO: add vcpkg-py-${{ matrix.python-version }}
-#        key: ${{ runner.os }}-py3.9-gamma  # -${{ hashFiles('CMakeLists.txt') }}
+
+    - name: Restore vcpkg cache
+      id: cache-vcpkg
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.VCPKG_ROOT }}/installed
+        # TODO: add vcpkg-py-${{ matrix.python-version }}
+        key: ${{ runner.os }}-py${{ matrix.python-version }}-gamma  # -${{ hashFiles('CMakeLists.txt') }}
 
 #    - name: Show content of workspace after cache has been restored
 #      run: find $RUNNER_WORKSPACE
 #      shell: bash
       
-#    - name: Bootstrap vcpkg and install packages if cache failed
-#      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
-#      run: |
-#        ${{ env.VCPKG_ROOT }}\bootstrap-vcpkg.bat
-#        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
-#        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
+    - name: Bootstrap vcpkg and install packages if cache failed
+      if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+      run: |
+        ${{ env.VCPKG_ROOT }}\bootstrap-vcpkg.bat
+        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x64-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
+        ${{ env.VCPKG_ROOT }}\vcpkg.exe install --triplet x86-windows boost-thread boost-filesystem boost-signals2 boost-circular-buffer boost-interprocess boost-python sdl2 sdl2-image[libjpeg-turbo] sdl2-ttf sdl2-gfx opengl
       
 #    - name: Run pip install
 #      run: |
