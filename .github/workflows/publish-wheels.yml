@@ -27,7 +27,7 @@ jobs:
 
     env:
       # TODO: Find how to read it from virtual machine (it is VCPKG_INSTALLATION_ROOT)
-      VCPKG_ROOT: "C:/vcpkg"
+      VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
     - name: Print VCPKG_ROOT environment variable
@@ -48,12 +48,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install build setuptools psutil wheel
 
-#    - name: Checkout vcpkg
-#      uses: actions/checkout@v2
-#      with:
-#        repository: microsoft/vcpkg
-#        ref: ${{ matrix.vcpkg-ref }}
-#        path: vcpkg-py${{ matrix.python-version }}
+    - name: Checkout vcpkg
+      uses: actions/checkout@v2
+      with:
+        repository: microsoft/vcpkg
+        path: vcpkg
 
     - name: Restore vcpkg_installed cache
       id: cache-vcpkg
