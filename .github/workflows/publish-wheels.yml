@@ -18,7 +18,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [ 3.6] # , 3.7, 3.8, 3.9 ]
+        python-version: [ 3.6 , 3.7, 3.8, 3.9 ]
 #        include:
 #          - python-version: 3.8
 #            vcpkg-ref: e803bf11296d8e7900dafb41e7b1224778d33dc6
@@ -26,7 +26,8 @@ jobs:
 #            vcpkg-ref: a0fa6aeb82b3956a2f52ec455061ba1916076d53
 
     env:
-      VCPKG_ROOT: ${{ VCPKG_INSTALLATION_ROOT }}
+      # TODO: Find how to read it from virtual machine (it is VCPKG_INSTALLATION_ROOT)
+      VCPKG_ROOT: "C:/vcpkg"
 
     steps:
     - name: Print VCPKG_ROOT environment variable
