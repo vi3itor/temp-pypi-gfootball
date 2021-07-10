@@ -26,7 +26,7 @@ jobs:
 #            vcpkg-ref: a0fa6aeb82b3956a2f52ec455061ba1916076d53
 
     env:
-      VCPKG_ROOT: ${{ env.VCPKG_INSTALLATION_ROOT }}
+      VCPKG_ROOT: ${{ VCPKG_INSTALLATION_ROOT }}
 
     steps:
     - name: Print VCPKG_ROOT environment variable
