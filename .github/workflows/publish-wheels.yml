@@ -22,8 +22,6 @@ jobs:
 #        include:
 #          - python-version: 3.8
 #            vcpkg-ref: e803bf11296d8e7900dafb41e7b1224778d33dc6
-#          - python-version: 3.9
-#            vcpkg-ref: a0fa6aeb82b3956a2f52ec455061ba1916076d53
 
     env:
       # TODO: Find how to read it from virtual machine (it is VCPKG_INSTALLATION_ROOT)
@@ -34,10 +32,9 @@ jobs:
       run: echo $VCPKG_ROOT
       shell: bash
 
+    - name: Check out football repository
     - uses: actions/checkout@v2
-#      with:
-#        path: football
-#
+
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -63,6 +60,12 @@ jobs:
         path: ${{ github.workspace }}/third_party/gfootball_engine/build_win/vcpkg_installed
         # TODO: hashFiles('...vcpkg.json')
         key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-alpha  # -${{ hashFiles('CMakeLists.txt') }}
+
+    - name: Update cache key without installing packages again
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.workspace }}/third_party/gfootball_engine/build_win/vcpkg_installed
+        key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-64-alpha
 
 #    - name: Show content of workspace after cache has been restored
 #      run: find $RUNNER_WORKSPACE
