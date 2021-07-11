@@ -54,6 +54,7 @@ jobs:
       with:
         path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
         # TODO: ${{ hashFiles('...vcpkg.json') }} or/and ${{ hashFiles('CMakeLists.txt') }}
+        # TODO: Update version of python 3.9 to the latest available one
         key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-${{ matrix.architecture }}-beta
 
     - name: Run pip install
