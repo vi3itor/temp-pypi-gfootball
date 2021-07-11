@@ -18,27 +18,23 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: [ 3.6 , 3.7, 3.8, 3.9 ]
-#        include:
-#          - python-version: 3.8
-#            vcpkg-ref: e803bf11296d8e7900dafb41e7b1224778d33dc6
+        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
+        architecture: ['x86', 'x64']
 
     env:
-      # TODO: Find how to read it from virtual machine (it is VCPKG_INSTALLATION_ROOT)
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
 
     steps:
-    - name: Print VCPKG_ROOT environment variable
-      run: echo $VCPKG_ROOT
-      shell: bash
-
     - name: Check out football repository
       uses: actions/checkout@v2
+      with:
+        path: football
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+        architecture: ${{ matrix.architecture }}
 
     - name: Upgrade pip and essential dependencies
       run: |
@@ -54,22 +50,11 @@ jobs:
         fetch-depth: 0
 
     - name: Restore vcpkg_installed cache
-      id: cache-vcpkg
       uses: actions/cache@v2
       with:
-        path: ${{ github.workspace }}/third_party/gfootball_engine/build_win/vcpkg_installed
-        # TODO: hashFiles('...vcpkg.json')
-        key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-alpha  # -${{ hashFiles('CMakeLists.txt') }}
-
-    - name: Update cache key without installing packages again
-      uses: actions/cache@v2
-      with:
-        path: ${{ github.workspace }}/third_party/gfootball_engine/build_win/vcpkg_installed
-        key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-64-alpha
-
-#    - name: Show content of workspace after cache has been restored
-#      run: find $RUNNER_WORKSPACE
-#      shell: bash
+        path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
+        # TODO: ${{ hashFiles('...vcpkg.json') }} or/and ${{ hashFiles('CMakeLists.txt') }}
+        key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-${{ matrix.architecture }}-beta
 
     - name: Run pip install
       run: python -m pip install . --use-feature=in-tree-build
