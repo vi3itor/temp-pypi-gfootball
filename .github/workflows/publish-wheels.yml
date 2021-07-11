@@ -52,18 +52,30 @@ jobs:
     - name: Restore vcpkg_installed cache
       uses: actions/cache@v2
       with:
-        path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
+        # TODO: When we run python -m build, it will copy source code to the random temp directory,
+        #  so there is no way to know in advance the name of the directory unless messing up with build.
+        #  Since releases are not happening often, it's fine to build dependencies from scratch too
+        # path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
+        path: ${{ github.workspace }}/vcpkg/installed
         # TODO: ${{ hashFiles('...vcpkg.json') }} or/and ${{ hashFiles('CMakeLists.txt') }}
         # TODO: Update version of python 3.9 to the latest available one
         key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-${{ matrix.architecture }}-beta
 
-    - name: Run pip install
+#    - name: Run pip install
+#      run: |
+#        cd football
+#        python -m pip install . --use-feature=in-tree-build
+
+    - name: Build package
       run: |
         cd football
-        python -m pip install . --use-feature=in-tree-build
+        python -m build
 
-#     - name: Build package
-#       run: python -m build
+    - uses: actions/upload-artifact@v2
+      with:
+        name: wheel-py-${{ matrix.python-version }}-${{ matrix.architecture }}
+        path: ${{ github.workspace }}/football/dist
+
 #     - name: Publish package
 #       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
 #       with:
