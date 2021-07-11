@@ -33,7 +33,7 @@ jobs:
       shell: bash
 
     - name: Check out football repository
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
 
     - name: Set up Python
       uses: actions/setup-python@v2
