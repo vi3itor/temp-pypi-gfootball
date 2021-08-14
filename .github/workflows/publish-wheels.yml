@@ -23,8 +23,6 @@ jobs:
 
     env:
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
-      VCPKG_JSON: "${{ github.workspace }}/football/third_party/gfootball_engine/vcpkg_manifests/py${{ matrix.python-version }}/vcpkg.json"
-      CMAKE_LISTS: "${{ github.workspace }}/football/third_party/gfootball_engine/CMakeLists.txt"
 
     steps:
     - name: Check out football repository
@@ -53,13 +51,16 @@ jobs:
 
     - name: Restore vcpkg_installed cache
       uses: actions/cache@v2
+      env: 
+        VCPKG_JSON_PATH: "${{ github.workspace }}/football/third_party/gfootball_engine/vcpkg_manifests/py${{ matrix.python-version }}/vcpkg.json"
+        CMAKE_LISTS_PATH: "${{ github.workspace }}/football/third_party/gfootball_engine/CMakeLists.txt"
       with:
         # TODO: Run python -m build without any arguments to check if the wheel can be built from sdist (the tool copies source code to the random temp directory,
         #  and proceeds with building. It insures that Manifest.in contains all the required files to build engine from source) 
         #  It can be done in a separate job before building the wheels
         path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
         # TODO: Update version of python 3.9 to the latest available one
-        key: vcpkg-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.architecture }}-${{ hashFiles(${{ env.VCPKG_JSON }}, ${{ env.CMAKE_LISTS }}) }}
+        key: vcpkg-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.architecture }}-${{ hashFiles($VCPKG_JSON_PATH, $CMAKE_LISTS_PATH) }}
 
 #    - name: Run pip install
 #      run: |
