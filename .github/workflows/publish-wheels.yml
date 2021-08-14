@@ -23,6 +23,8 @@ jobs:
 
     env:
       VCPKG_ROOT: "${{ github.workspace }}/vcpkg"
+      VCPKG_JSON: "${{ github.workspace }}/football/third_party/gfootball_engine/vcpkg_manifests/py${{ matrix.python-version }}/vcpkg.json"
+      CMAKE_LISTS: "${{ github.workspace }}/football/third_party/gfootball_engine/CMakeLists.txt"
 
     steps:
     - name: Check out football repository
@@ -52,14 +54,12 @@ jobs:
     - name: Restore vcpkg_installed cache
       uses: actions/cache@v2
       with:
-        # TODO: When we run python -m build, it will copy source code to the random temp directory,
-        #  so there is no way to know in advance the name of the directory unless messing up with build.
-        #  Since releases are not happening often, it's fine to build dependencies from scratch too
-        # path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
-        path: ${{ github.workspace }}/vcpkg/installed
-        # TODO: ${{ hashFiles('...vcpkg.json') }} or/and ${{ hashFiles('CMakeLists.txt') }}
+        # TODO: Run python -m build without any arguments to check if the wheel can be built from sdist (the tool copies source code to the random temp directory,
+        #  and proceeds with building. It insures that Manifest.in contains all the required files to build engine from source) 
+        #  It can be done in a separate job before building the wheels
+        path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
         # TODO: Update version of python 3.9 to the latest available one
-        key: ${{ runner.os }}-vcpkg-py${{ matrix.python-version }}-${{ matrix.architecture }}-beta
+        key: vcpkg-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.architecture }}-${{ hashFiles(${{ env.VCPKG_JSON }}, ${{ env.CMAKE_LISTS }}) }}
 
 #    - name: Run pip install
 #      run: |
@@ -69,11 +69,11 @@ jobs:
     - name: Build package
       run: |
         cd football
-        python -m build
+        python -m build --wheel
 
     - uses: actions/upload-artifact@v2
       with:
-        name: wheel-py-${{ matrix.python-version }}-${{ matrix.architecture }}
+        name: windows-wheel-py-${{ matrix.python-version }}-${{ matrix.architecture }}
         path: ${{ github.workspace }}/football/dist
 
 #     - name: Publish package
