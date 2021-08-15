@@ -76,7 +76,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: windows-wheel-py-${{ matrix.python-version }}-${{ matrix.architecture }}
-        path: ${{ github.workspace }}/football/dist
+        path: ${{ github.workspace }}/football/dist/*.whl
 
 #     - name: Publish package
 #       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
