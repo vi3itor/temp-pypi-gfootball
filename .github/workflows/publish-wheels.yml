@@ -108,7 +108,7 @@ jobs:
     - name: Build sdist
       run: |
         cd football
-        python -m build sdist
+        python -m build --sdist
 
     - name: Download artifacts
       uses: actions/download-artifact@v2
