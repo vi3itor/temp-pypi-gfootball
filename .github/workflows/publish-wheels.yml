@@ -79,6 +79,7 @@ jobs:
     - name: Build package
       run: |
         cd football
+        mkdir dist
         touch dist/py${{ matrix.python-version }}-${{ matrix.architecture }}.whl
 #       python -m build --wheel
 
