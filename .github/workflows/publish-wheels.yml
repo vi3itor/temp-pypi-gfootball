@@ -79,7 +79,8 @@ jobs:
     - name: Build package
       run: |
         cd football
-        python -m build --wheel
+        touch py${{ matrix.python-version }}-${{ matrix.architecture }}.whl
+#       python -m build --wheel
 
     - uses: actions/upload-artifact@v2
       with:
@@ -116,7 +117,11 @@ jobs:
         path: ${{ github.workspace }}/football/artifacts
     
     - name: Move wheels to dist directory
-      run:  mv artifacts/**/*.whl dist
+      run:  |
+        pwd
+        ls
+        mv ${{ github.workspace }}/football/artifacts/**/*.whl ${{ github.workspace }}/football/dist
+        
 
     - uses: actions/upload-artifact@v2
       with:
