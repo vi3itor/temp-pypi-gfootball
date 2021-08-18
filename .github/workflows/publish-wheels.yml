@@ -19,7 +19,7 @@ jobs:
     - name: Check out football repository
       uses: actions/checkout@v2
     - name: Run docker tests
-      run: ./run_docker_test.sh
+      run: sh ./run_docker_test.sh
   
   build-windows:
     needs: [test-in-docker]
