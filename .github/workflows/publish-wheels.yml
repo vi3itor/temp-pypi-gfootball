@@ -13,17 +13,16 @@ on: push
 #     types: [published]
 
 jobs:
-#  test-docker:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - name: Cache Docker layers
-#      uses: actions/cache@v2
-#      with:
-#        path: some_path
-#        key: some_key
-
+  test-in-docker:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out football repository
+      uses: actions/checkout@v2
+    - name: Run docker tests
+      run: ./run_docker_test.sh
+  
   build-windows:
-#    needs: [test-docker]
+    needs: [test-in-docker]
     runs-on: windows-latest
     strategy:
       fail-fast: false
