@@ -113,7 +113,10 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
-        path: ${{ github.workspace }}/football/dist
+        path: ${{ github.workspace }}/football/artifacts
+    
+    - name: Move wheels to dist directory
+      run:  mv artifacts/**/*.whl dist
 
     - uses: actions/upload-artifact@v2
       with:
