@@ -85,6 +85,7 @@ jobs:
         )
       env:
         UNITTEST_IN_DOCKER: 1
+      shell: cmd
       working-directory: football
 
     - uses: actions/upload-artifact@v2
