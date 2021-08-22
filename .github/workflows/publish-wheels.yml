@@ -78,11 +78,7 @@ jobs:
       working-directory: football
 
     - name: Run the tests
-      run: |
-        FOR %f IN (gfootball\env\*test.py) DO (
-          call python %f
-          if errorlevel 1 exit /B 1
-        )
+      run: FOR %f IN (gfootball\env\*test.py) DO ( call python %f & if errorlevel 1 exit /B 1 )
       env:
         UNITTEST_IN_DOCKER: 1
       shell: cmd
