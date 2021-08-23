@@ -40,6 +40,15 @@ import numpy as np
 import psutil
 from six.moves import range
 
+# TODO: Remove it after updating hash_values for rendering
+from inspect import currentframe
+def print_message_to_update_hash_value(old_hashvalue, new_hashvalue):
+  if old_hashvalue == new_hashvalue:
+    return
+  cf = currentframe()
+  line_no = cf.f_back.f_lineno
+  print(f'Update hash value from {old_hashvalue} to {new_hashvalue} on line {line_no + 1}')
+
 fast_run = False
 
 
@@ -149,21 +158,21 @@ class FootballEnvTest(parameterized.TestCase):
       if extensive:
 
         if hash_value != 1174966789:
-          # TODO: Check hash value here too!
+          # TODO: Update hash value here
+          print_message_to_update_hash_value(2674313618, hash_value)
           # self.assertEqual(hash_value, 2674313618)
-          pass
       elif episode % 2 == 0:
 
         if hash_value != 2275067030:
-          # TODO: Check hash value here too!
+          # TODO: Update hash value here
+          print_message_to_update_hash_value(1402284732, hash_value)
           # self.assertEqual(hash_value, 1402284732)
-          pass
       else:
 
         if hash_value != 2045063811:
-          # TODO: Check hash value here too!
+          # TODO: Update hash value here
+          print_message_to_update_hash_value(51517772, hash_value)
           # self.assertEqual(hash_value, 51517772)
-          pass
     env.close()
 
   def test___control_all_players(self):
@@ -297,7 +306,8 @@ class FootballEnvTest(parameterized.TestCase):
     for _ in range(10):
       o, _, _, _ = env.step(football_action_set.action_right)
       hash_value = observation_hash(o, hash_value)
-    # TODO: Check if the value is correct
+    # TODO: Update hash value here
+    print_message_to_update_hash_value(2591249504, hash_value)
     # self.assertEqual(hash_value, 2591249504)
     env.close()
 
