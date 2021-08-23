@@ -47,7 +47,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: microsoft/vcpkg
-        ref: 6bc4362fb49e53f1fff7f51e4e27e1946755ecc6
+        ref: 025e564979cc01d0fbc5c920aa8a36635efb01bb
         path: vcpkg
         fetch-depth: 0
 
