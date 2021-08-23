@@ -14,7 +14,6 @@ on: push
 
 jobs:
   build-windows:
-
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -40,7 +39,7 @@ jobs:
     - name: Upgrade pip and essential dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build setuptools psutil wheel
+        pip install -U build setuptools psutil wheel
         pip install -r requirements.txt
       working-directory: football
 
@@ -79,8 +78,8 @@ jobs:
 
     - name: Run the tests
       run: FOR %%f IN (gfootball\env\*test.py) DO ( call python %%f & if errorlevel 1 exit /B 1 )
-#      env:
-#        UNITTEST_IN_DOCKER: 1
+      env:
+        UNITTEST_IN_DOCKER: 1
       shell: cmd
       working-directory: football
 
@@ -120,8 +119,9 @@ jobs:
         name: all-artifacts
         path: ${{ github.workspace }}/dist/
 
-#    - name: Publish package
-#      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
-#      with:
-#        user: __token__
-#        password: ${{ secrets.PYPI_API_TOKEN }}
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
