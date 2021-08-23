@@ -25,11 +25,6 @@ named_action_from_action_set = football_action_set.named_action_from_action_set
 class FootballActionSetTest(absltest.TestCase):
 
   def test_action_from_basic_action_set(self):
-    # Test what happens if one of the job fails
-    import platform
-    py_major, py_minor, _ = platform.python_version_tuple()
-    if py_minor == '6':
-      assert True is False
     action_set = football_action_set.get_action_set({'action_set': 'default'})
     self.assertEqual(
         named_action_from_action_set(action_set, 1),
