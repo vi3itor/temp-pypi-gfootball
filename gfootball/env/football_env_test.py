@@ -149,15 +149,33 @@ class FootballEnvTest(parameterized.TestCase):
       if extensive:
         # TODO: Are these checks are still required?
         if hash_value != 1174966789:
-          self.assertEqual(hash_value, 1828377453)
+          # Linux
+          expected_hash_value = 1374617688
+          if platform.system() == 'Windows':
+            expected_hash_value = 1828377453
+          elif platform.system() == 'Darwin':
+            expected_hash_value = 2070005886
+          self.assertEqual(hash_value, expected_hash_value)
       elif episode % 2 == 0:
-
+        # TODO: And these?
         if hash_value != 2275067030:
-          self.assertEqual(hash_value, 2766829577)
+          # Linux
+          expected_hash_value = 2457763948
+          if platform.system() == 'Windows':
+            expected_hash_value = 2766829577
+          elif platform.system() == 'Darwin':
+            expected_hash_value = 876758366
+          self.assertEqual(hash_value, expected_hash_value)
       else:
-
+        # TODO: And these?
         if hash_value != 2045063811:
-          self.assertEqual(hash_value, 2630021865)
+          # Linux
+          expected_hash_value = 867340920
+          if platform.system() == 'Windows':
+            expected_hash_value = 2630021865
+          elif platform.system() == 'Darwin':
+            expected_hash_value = 991389279
+          self.assertEqual(hash_value, expected_hash_value)
     env.close()
 
   def test___control_all_players(self):
@@ -291,7 +309,13 @@ class FootballEnvTest(parameterized.TestCase):
     for _ in range(10):
       o, _, _, _ = env.step(football_action_set.action_right)
       hash_value = observation_hash(o, hash_value)
-    self.assertEqual(hash_value, 683941870)
+    # Linux
+    expected_hash_value = 3642886809
+    if platform.system() == 'Windows':
+      expected_hash_value = 683941870
+    elif platform.system() == 'Darwin':
+      expected_hash_value = 1865563121
+    self.assertEqual(hash_value, expected_hash_value)
     env.close()
 
   def test_dynamic_render(self):
