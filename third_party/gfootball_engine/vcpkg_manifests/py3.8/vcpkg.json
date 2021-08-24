@@ -1,6 +1,6 @@
 {
   "name": "gfootball-engine",
-  "version-string": "0.1.0-dev",
+  "version-string": "2.10",
   "builtin-baseline": "025e564979cc01d0fbc5c920aa8a36635efb01bb",
   "dependencies": [
     "python3",

@@ -7,7 +7,7 @@ if(WIN32)
   elseif(NOT DEFINED ENV{VCPKG_ROOT})
     message(FATAL_ERROR "VCPKG_ROOT is not defined. Set the location of vcpkg")
   elseif(NOT DEFINED ENV{PY_VERSION})  # PY_VERSION has to be X.Y, e.g. 3.9
-    message(FATAL_ERROR "PY_VERSION is not defined. Define Python version that will be used with extension, e.g. 3.9")
+    message(FATAL_ERROR "PY_VERSION is not defined. Define Python version that will be used, e.g. 3.9")
   endif()
 
   if(${CMAKE_GENERATOR_PLATFORM} STREQUAL Win32)
