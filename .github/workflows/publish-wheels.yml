@@ -8,9 +8,9 @@
 
 name: Build and Publish Python Wheels
 
-on: push
-#   release:
-#     types: [published]
+on:
+  release:
+    types: [published]
 
 jobs:
   build-windows:
@@ -57,14 +57,16 @@ jobs:
 #         VCPKG_JSON_PATH: "${{ github.workspace }}/football/third_party/gfootball_engine/vcpkg_manifests/py${{ matrix.python-version }}/vcpkg.json"
 #         CMAKE_LISTS_PATH: "${{ github.workspace }}/football/third_party/gfootball_engine/CMakeLists.txt"
       with:
-        # TODO: Run python -m build without any arguments to check if the wheel can be built from sdist:
-        #  the tool copies source code to the random temp directory, and proceeds with building.
-        #  Doing so insures that Manifest.in contains all the required files to build engine from source.
-        #  It can be done in a separate job before preparing the wheels for different python versions.
         path: ${{ github.workspace }}/football/third_party/gfootball_engine/build_win/vcpkg_installed
         key: vcpkg-${{ runner.os }}-py${{ matrix.python-version }}-${{ matrix.architecture }}-${{ hashFiles('football/third_party/gfootball_engine/vcpkg_manifests/py3*/vcpkg.json') }}
 
     - name: Build package
+      # TODO: Run python -m build without any arguments to check if the wheel can be built from sdist:
+      #  the tool copies source code to the random temp directory, and proceeds with building.
+      #  Doing so insures that Manifest.in contains all the required files to build engine from source.
+      #  The downside is that we can't cache vcpkg_installed packages, since they'll be located in the random temp directory.
+      #  It increases workflow running time from ~17 minutes to ~42 minutes. On the other hand, cache is valid only for 7 days,
+      #  and releases are coming not so often anyway. But we definitely should use cache for pushes and PR requests instead.
       run: python -m build --wheel
       working-directory: football
 #        |
@@ -87,6 +89,7 @@ jobs:
       with:
         name: windows-wheel-py-${{ matrix.python-version }}-${{ matrix.architecture }}
         path: ${{ github.workspace }}/football/dist/*.whl
+        retention-days: 7
 
   upload-wheels:
     needs: [build-windows]
@@ -114,14 +117,15 @@ jobs:
     - name: Move wheels to dist directory
       run:  mv artifacts/**/*.whl dist
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: all-artifacts
-        path: ${{ github.workspace }}/dist/
+#    - uses: actions/upload-artifact@v2
+#      with:
+#        name: all-artifacts
+#        path: ${{ github.workspace }}/dist/
 
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+        # TODO: Remove before sending the PR
         repository_url: https://test.pypi.org/legacy/
