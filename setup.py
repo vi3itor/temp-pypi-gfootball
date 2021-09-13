@@ -126,7 +126,7 @@ packages = find_packages() + find_packages('third_party')
 
 setup(
     name='temp-gfootball',
-    version='2.10b7',
+    version='2.10b8',
     description=('Temporary version of Google Research Football - RL environment based on '
                  'open-source game Gameplay Football. Will be deleted as soon as Windows integration is completed.'),
     long_description=('Please see [our GitHub page](https://github.com/google-research/football) '
