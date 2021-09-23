@@ -10,6 +10,8 @@ if(WIN32)
     message(FATAL_ERROR "PY_VERSION is not defined. Define Python version that will be used, e.g. 3.9")
   endif()
 
+  set(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION_MAXIMUM "10.0.19041.0")
+
   if(${CMAKE_GENERATOR_PLATFORM} STREQUAL Win32)
     set(VCPKG_TARGET_TRIPLET x86-windows)
   elseif(${CMAKE_GENERATOR_PLATFORM} STREQUAL x64)
