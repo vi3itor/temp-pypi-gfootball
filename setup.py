@@ -103,7 +103,7 @@ class CustomBuild(build_ext):
 
     py_major, py_minor, _ = platform.python_version_tuple()
     guide_message = 'Please follow the guide on how to install prerequisites: ' \
-                  'https://github.com/vi3itor/football/blob/windows/gfootball/doc/compile_engine.md#windows'
+                  'https://github.com/google-research/football/blob/master/gfootball/doc/compile_engine.md#windows'
     if not os.environ.get('VCPKG_ROOT'):
       raise OSError('VCPKG_ROOT environment variable is not defined.\n' + guide_message)
     os.environ['GENERATOR_PLATFORM'] = 'x64' if sys.maxsize > 2 ** 32 else 'Win32'
@@ -126,7 +126,7 @@ packages = find_packages() + find_packages('third_party')
 
 setup(
     name='temp-gfootball',
-    version='2.10b9',
+    version='2.10.1b1',
     description=('Temporary version of Google Research Football - RL environment based on '
                  'open-source game Gameplay Football. Will be deleted as soon as Windows integration is completed.'),
     long_description=('Please see [our GitHub page](https://github.com/google-research/football) '

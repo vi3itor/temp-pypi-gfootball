@@ -3,10 +3,12 @@ name: Build and Publish Python Wheels
 on:
   release:
     types: [published]
+  # Allow to trigger the workflow manually
   workflow_dispatch:
 
 jobs:
   build-windows:
+    # TODO: Change back to windows-latest once the SDK problem is resolved
     runs-on: windows-2016
     strategy:
       fail-fast: false
