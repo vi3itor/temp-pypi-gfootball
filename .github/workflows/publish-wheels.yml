@@ -9,11 +9,11 @@ on:
 jobs:
   build-windows:
     # TODO: Change back to windows-latest once the SDK problem is resolved
-    runs-on: windows-2019
+    runs-on: windows-2016
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9']  #, '3.10' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
         architecture: ['x86', 'x64']
 
     env:
