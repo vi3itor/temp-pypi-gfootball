@@ -9,7 +9,7 @@ on:
 jobs:
   build-windows:
     # TODO: Change back to windows-latest once the SDK problem is resolved
-    runs-on: windows-2016
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
