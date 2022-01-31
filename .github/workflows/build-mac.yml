@@ -21,7 +21,7 @@ jobs:
           brew install python3 cmake sdl2 sdl2_image sdl2_ttf sdl2_gfx boost boost-python3
 
       - name: Upgrade pip and essential dependencies
-        run: python3 -m pip install --upgrade pip setuptools wheel psutil
+        run: python3 -m pip install --upgrade pip setuptools wheel build psutil
 
       - name: Build package
         run: python3 -m build --wheel
