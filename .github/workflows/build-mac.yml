@@ -10,14 +10,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest ]  # [ macos-10.15, macos-latest ]
-        # TODO: Test with different Python versions, e.g. python-version: ['3.8', '3.9', '3.10']
+        os: [ macos-10.15, macos-latest ]
+        python-version: ['3.7', '3.8', '3.9', '3.10']
     steps:
       - name: Check out football repository
         uses: actions/checkout@v2
+        with:
+          submodules: true
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+  
       - name: Install brew dependencies
-        run: brew install python3 cmake sdl2 sdl2_image sdl2_ttf sdl2_gfx boost boost-python3
+        run: brew install cmake sdl2 sdl2_image sdl2_ttf sdl2_gfx boost
 
       - name: Upgrade pip and install dependencies
         run: |
