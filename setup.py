@@ -118,8 +118,8 @@ if 'develop' in sys.argv and os.path.exists('build'):
 packages = find_packages() + find_packages('third_party')
 
 setup(
-    name='temp-gfootball',
-    version='2.10.3b1',
+    name='test-pypi-gfootball',
+    version='2.10.3b2',
     description=('Temporary version of Google Research Football - RL environment based on '
                  'open-source game Gameplay Football. Will be deleted as soon as Windows integration is completed.'),
     long_description=('Please see [our GitHub page](https://github.com/google-research/football) '
@@ -127,7 +127,7 @@ setup(
     long_description_content_type='text/markdown',
     author='vi3itor',
     author_email='no-reply@google.com',
-    url='https://github.com/vi3itor/temp-pypi-gfootball',
+    url='https://github.com/vi3itor/test-pypi-gfootball',
     license='Apache 2.0',
     packages=packages,
     package_dir={'gfootball_engine': 'third_party/gfootball_engine'},
