@@ -62,7 +62,7 @@ class CoreAction(object):
     return self._backend_action >= other._backend_action
 
   def __hash__(self):
-    return self._backend_action
+    return int(self._backend_action)
 
   def __repr__(self):
     return self._name

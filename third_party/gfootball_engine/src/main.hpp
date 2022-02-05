@@ -51,8 +51,7 @@ void DoValidation(int line, const char* file);
 #include <condition_variable>
 #include <mutex>
 
-#define SHARED_PTR boost::shared_ptr
-#define WEAK_PTR boost::weak_ptr
+#define SHARED_PTR std::shared_ptr
 
 enum e_RenderingMode {
   e_Disabled,

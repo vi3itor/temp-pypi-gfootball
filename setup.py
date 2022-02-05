@@ -48,7 +48,9 @@ class CustomBuild(build_ext):
     else:
       # Development install (pip install -e .)
       dest_dir = "gfootball_engine"
-      if os.system('cp -r third_party/gfootball_engine/ ' + dest_dir):
+      # TODO: Use symlink for the development install instead?
+      if os.system('cp -r third_party/gfootball_engine/__init__.py ' + dest_dir or
+                   'cp -r third_party/gfootball_engine/data ' + dest_dir):
         raise OSError("Google Research Football: Could not copy "
                       "engine to %s." % dest_dir)
     if os.system('cp -r third_party/fonts ' + dest_dir):
@@ -71,7 +73,7 @@ class CustomBuild(build_ext):
             dest_dir)
     else:
       if (os.system('gfootball/build_game_engine.sh') or
-          os.system('cp third_party/gfootball_engine/_gameplayfootball.so ' +
+          os.system('cp third_party/gfootball_engine/_gameplayfootball*.so ' +
                     dest_dir)):
         raise OSError('Google Research Football compilation failed')
 
@@ -86,6 +88,7 @@ class CustomBuild(build_ext):
       # in the project root directory. So we copy only __init__.py and `data` directory
       shutil.copy2('third_party/gfootball_engine/__init__.py', dest_dir)
       data_dir = os.path.join(dest_dir, 'data')
+      # TODO: Try creating symbolic link, and copy only in case of failure.
       if not os.path.exists(data_dir):
         shutil.copytree('third_party/gfootball_engine/data', data_dir)
 
@@ -94,13 +97,11 @@ class CustomBuild(build_ext):
     if not os.path.exists(dst_fonts):
       shutil.copytree("third_party/fonts", dst_fonts)
 
-    py_major, py_minor, _ = platform.python_version_tuple()
     guide_message = 'Please follow the guide on how to install prerequisites: ' \
                   'https://github.com/google-research/football/blob/master/gfootball/doc/compile_engine.md#windows'
     if not os.environ.get('VCPKG_ROOT'):
       raise OSError('VCPKG_ROOT environment variable is not defined.\n' + guide_message)
     os.environ['GENERATOR_PLATFORM'] = 'x64' if sys.maxsize > 2 ** 32 else 'Win32'
-    os.environ['PY_VERSION'] = f'{py_major}.{py_minor}'
     if os.system('gfootball\\build_game_engine.bat'):
       raise OSError('Google Research Football compilation failed.\n' + guide_message)
     # Copy compiled library and its dependencies
@@ -114,14 +115,17 @@ class CustomBuild(build_ext):
 # we remove `build` directory created by a regular setup
 if 'develop' in sys.argv and os.path.exists('build'):
   shutil.rmtree('build')
+elif 'develop' not in sys.argv and os.path.exists('gfootball_engine'):
+  # Clean up 'gfootball_engine' directory created by a `develop` setup
+  shutil.rmtree('gfootball_engine')
 
 packages = find_packages() + find_packages('third_party')
 
 setup(
     name='test-pypi-gfootball',
-    version='2.10.3b2',
-    description=('Temporary version of Google Research Football - RL environment based on '
-                 'open-source game Gameplay Football. Will be deleted as soon as Windows integration is completed.'),
+    version='2.11.0b1',
+    description=('Test version of Google Research Football - RL environment based on '
+                 'open-source game Gameplay Football. Used for testing CI builds and wheel deployment.'),
     long_description=('Please see [our GitHub page](https://github.com/google-research/football) '
                       'for details.'),
     long_description_content_type='text/markdown',
@@ -136,7 +140,7 @@ setup(
         'pygame>=1.9.6',
         'opencv-python',
         'psutil',
-        'scipy',
+        'numpy',
         'gym>=0.11.0',
         'absl-py',
         'wheel',

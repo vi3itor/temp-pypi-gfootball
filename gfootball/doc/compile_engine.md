@@ -37,7 +37,7 @@ As for the C++ engine dependencies (`boost`, `SDL`, etc.), you don't have to ins
 Next, run the following lines in the command prompt to install Google Research Football environment:
 ```commandline
 :: Clone the repository
-git clone https://github.com/google-research/football.git
+git clone --recurse-submodules https://github.com/google-research/football.git
 cd football
 :: Set VCPKG_ROOT environment variable that points to vcpkg installation
 set VCPKG_ROOT=C:\dev\vcpkg\
@@ -69,7 +69,7 @@ python3 -m pip install psutil
 ```
 Clone the repository and navigate to the directory:
 ```shell
-git clone https://github.com/google-research/football.git
+git clone --recurse-submodules https://github.com/google-research/football.git
 cd football
 ```
 
@@ -115,6 +115,13 @@ libdirectfb-dev libst-dev mesa-utils xvfb x11vnc python3-pip
 python3 -m pip install --upgrade pip setuptools wheel
 python3 -m pip install psutil
 ```
+
+Clone the repository and navigate to the directory:
+```shell
+git clone --recurse-submodules https://github.com/google-research/football.git
+cd football
+```
+
 Use [virtual environment](https://docs.python.org/3/tutorial/venv.html) to avoid messing up with global dependencies:
 
 ```shell

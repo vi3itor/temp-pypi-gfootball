@@ -22,7 +22,6 @@ import os
 import sys
 
 
-
 game_path = os.path.dirname(os.path.abspath(__file__))
 if game_path not in sys.path:
   sys.path.append(game_path)
@@ -42,8 +41,8 @@ if 'GFOOTBALL_DATA_DIR' not in os.environ:
 try:
   from _gameplayfootball import *
 except:
-  if not (os.path.isfile(os.path.join(game_path, 'libgame.so')) and
-          os.path.isfile(os.path.join(game_path, '_gameplayfootball.so'))):
+  # TODO: Improve warning message, search for correct filename.
+  if not os.path.isfile(os.path.join(game_path, '_gameplayfootball.so')):
     logging.warning('Looks like game engine is not compiled, please run:')
     engine_path = os.path.abspath(os.path.dirname(__file__))
     logging.warning(
