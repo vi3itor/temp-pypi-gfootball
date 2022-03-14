@@ -14,15 +14,19 @@
 #ifndef _AI_AI
 #define _AI_AI
 
-#include <pybind11/pybind11.h>
-
 #include "../onthepitch/match.hpp"
 #include "../gamedefines.hpp"
 #include "gfootball_actions.h"
+#include <Python.h>
+
+#include <boost/python.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "main.hpp"
 
 
-namespace py = pybind11;
+namespace bp = boost::python;
 
 class AIControlledKeyboard;
 class GameTask;
@@ -39,12 +43,12 @@ struct GameEnv {
   SharedInfo get_info();
 
   // Get the current rendered frame.
-  py::object get_frame();
+  PyObject* get_frame();
 
   // Executes the action inside the game.
   void action(int action, bool left_team, int player);
   void reset(ScenarioConfig game_config);
-  py::object get_state(const std::string& pickle);
+  PyObject* get_state(const std::string& pickle);
   void set_state(const std::string& state);
   void step();
 

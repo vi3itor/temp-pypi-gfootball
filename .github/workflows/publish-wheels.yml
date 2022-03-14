@@ -8,11 +8,12 @@ on:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    # TODO: Change back to windows-latest after March 15, 2022 and exclude unsupported Python versions
+    runs-on: windows-2016
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.7', '3.8', '3.9', '3.10' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
         architecture: ['x86', 'x64']
 
     env:
@@ -23,7 +24,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         path: football
-        submodules: true
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -33,7 +33,8 @@ jobs:
 
     - name: Upgrade pip and install dependencies
       run: |
-        python -m pip install --upgrade pip build setuptools wheel
+        python -m pip install --upgrade pip
+        python -m pip install -U build setuptools psutil wheel
         python -m pip install -r requirements.txt
       working-directory: football
 
@@ -41,7 +42,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: microsoft/vcpkg
-        ref: 7e7dad5fe20cdc085731343e0e197a7ae655555b
+        ref: b18b17865cfb6bd24620a00f30691be6775abb96
         path: vcpkg
         fetch-depth: 0
 
@@ -86,8 +87,6 @@ jobs:
     steps:
     - name: Check out football repository
       uses: actions/checkout@v2
-      with:
-        submodules: true
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -118,5 +117,5 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
-        # TODO: Remove before sending the PR
+        # Only for test builds
         repository_url: https://test.pypi.org/legacy/

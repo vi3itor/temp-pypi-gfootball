@@ -1109,7 +1109,7 @@ void TeamAIController::PrepareSetPiece(e_GameMode setPiece, Team *other_team,
                     other_team->GetAllPlayers().size() ==
                         team->GetAllPlayers().size() &&
                     (GetScenarioConfig().LeftTeamOwnsBall() ^
-                        (kickoffTakerTeamId == 0))) {
+                     kickoffTakerTeamId == 0)) {
                   formation_players = other_team->GetAllPlayers();
                 }
                 assert(formation_players.size() == players_to_position.size());

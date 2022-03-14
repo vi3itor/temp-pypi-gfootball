@@ -13,33 +13,41 @@
 
 #undef NDEBUG
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl_bind.h>
-
 #include "src/game_env.hpp"
+#include <Python.h>
 
 #ifdef WIN32
-// TODO: Test and remove on Windows
 #define BOOST_USE_WINDOWS_H
 #endif
+#include <boost/python.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
-namespace py = pybind11;
-
-// TODO: Make selected classes opaque (PYBIND_MAKE_OPAQUE)
+namespace bp = boost::python;
+using namespace boost::python;
+using namespace boost::interprocess;
+using std::string;
 
 class GameEnv_Python : public GameEnv {
  public:
-  py::bytes get_frame_python() {
+  PyObject* get_frame_python() {
     ContextHolder c(this);
-    return py::bytes(get_frame());
+    screenshoot screen = get_frame();
+    PyObject* str = PyBytes_FromStringAndSize(screen.data(), screen.size());
+    return str;
   }
 
-  py::bytes get_state_python(const std::string& to_pickle) {
-    return py::bytes(get_state(to_pickle));
+  PyObject* get_state_python(const std::string& to_pickle) {
+    std::string state = get_state(to_pickle);
+    PyObject* str = PyBytes_FromStringAndSize(state.data(), state.size());
+    return str;
   }
 
-  py::bytes set_state_python(const std::string& state) {
-    return py::bytes(set_state(state));
+  PyObject* set_state_python(const std::string& state) {
+    std::string from_pickle = set_state(state);
+    PyObject* str = PyBytes_FromStringAndSize(from_pickle.data(), from_pickle.size());
+    return str;
   }
 
   void step_python() {
@@ -70,20 +78,24 @@ class GameEnv_Python : public GameEnv {
   }
 };
 
-PYBIND11_MODULE(_gameplayfootball, m) {
-  py::bind_vector<std::vector<float> >(m, "FloatVec");
+BOOST_PYTHON_MODULE(_gameplayfootball) {
+  class_<std::vector<float> >("FloatVec")
+      .def(vector_indexing_suite<std::vector<float> >());
 
-  py::bind_vector<std::vector<int> >(m, "IntVec");
+  class_<std::vector<int> >("IntVec")
+      .def(vector_indexing_suite<std::vector<int> >());
 
-  py::bind_vector<std::vector<PlayerInfo> >(m, "PlayerInfoVec");
+  class_<std::vector<PlayerInfo> >("PlayerInfoVec")
+      .def(vector_indexing_suite<std::vector<PlayerInfo> >());
 
-  py::bind_vector<StringVector>(m, "StringVector");
+  class_<StringVector>("StringVector")
+      .def(boost::python::vector_indexing_suite<StringVector>());
 
-  py::class_<Position>(m, "Position")
+  class_<Position>("Position")
       .def("__getitem__", &Position::env_coord)
       .def("__str__", &Position::debug);
 
-  py::class_<PlayerInfo>(m, "PlayerInfo")
+  class_<PlayerInfo>("PlayerInfo")
       .def_readonly("position", &PlayerInfo::player_position)
       .def_readonly("direction", &PlayerInfo::player_direction)
       .def_readonly("tired_factor", &PlayerInfo::tired_factor)
@@ -92,12 +104,13 @@ PYBIND11_MODULE(_gameplayfootball, m) {
       .def_readonly("role", &PlayerInfo::role)
       .def_readonly("designated_player", &PlayerInfo::designated_player);
 
-  py::class_<ControllerInfo>(m, "ControllerInfo")
-      .def_readonly("controlled_player", &ControllerInfo::controlled_player);
+  class_<ControllerInfo>("ControllerInfo", init<int>())
+      .add_property("controlled_player", &ControllerInfo::controlled_player);
 
-  py::bind_vector<std::vector<ControllerInfo> >(m, "ControllerInfoVec");
+  class_<std::vector<ControllerInfo> >("ControllerInfoVec").def(
+      vector_indexing_suite<std::vector<ControllerInfo> >());
 
-  py::class_<SharedInfo>(m, "SharedInfo")
+  class_<SharedInfo>("SharedInfo")
       .def_readonly("ball_position", &SharedInfo::ball_position)
       .def_readonly("ball_rotation", &SharedInfo::ball_rotation)
       .def_readonly("ball_direction", &SharedInfo::ball_direction)
@@ -108,19 +121,18 @@ PYBIND11_MODULE(_gameplayfootball, m) {
       .def_readonly("is_in_play", &SharedInfo::is_in_play)
       .def_readonly("ball_owned_team", &SharedInfo::ball_owned_team)
       .def_readonly("ball_owned_player", &SharedInfo::ball_owned_player)
-      .def_readonly("left_controllers", &SharedInfo::left_controllers)
-      .def_readonly("right_controllers", &SharedInfo::right_controllers)
+      .add_property("left_controllers", &SharedInfo::left_controllers)
+      .add_property("right_controllers", &SharedInfo::right_controllers)
       .def_readonly("game_mode", &SharedInfo::game_mode)
       .def_readonly("step", &SharedInfo::step);
 
-  py::enum_<GameState>(m, "GameState", py::arithmetic())
+  enum_<GameState>("GameState")
       .value("game_created", GameState::game_created)
       .value("game_initiated", GameState::game_initiated)
       .value("game_running", GameState::game_running)
       .value("game_done", GameState::game_done);
 
-  py::class_<GameEnv_Python>(m, "GameEnv")
-      .def(py::init<>())
+  class_<GameEnv_Python>("GameEnv")
       .def("start_game", &GameEnv_Python::start_game)
       .def("get_info", &GameEnv_Python::get_info)
       .def("get_frame", &GameEnv_Python::get_frame_python)
@@ -138,14 +150,13 @@ PYBIND11_MODULE(_gameplayfootball, m) {
                      &GameEnv_Python::waiting_for_game_count)
       .def("tracker_setup", &GameEnv::tracker_setup);
 
-  py::class_<Vector3>(m, "Vector3")
-      .def(py::init<float, float, float>())
-      .def("__getitem__", &Vector3::GetEnvCoord)
-      .def("__setitem__", &Vector3::SetEnvCoord);
+  class_<Vector3>("Vector3", init<float, float, float>())
+     .def("__getitem__", &Vector3::GetEnvCoord)
+     .def("__setitem__", &Vector3::SetEnvCoord);
 
-  // TODO: Make sure it is noncopyable
-  py::class_<GameConfig, SHARED_PTR<GameConfig> >(m, "GameConfig")
-      .def_static("make", &GameConfig::make)
+  class_<GameConfig, SHARED_PTR<GameConfig>, boost::noncopyable>("GameConfig", no_init)
+      .def("make", &GameConfig::make)
+      .staticmethod("make")
       .def_readwrite("render", &GameConfig::render)
       .def_readwrite("physics_steps_per_frame",
                      &GameConfig::physics_steps_per_frame)
@@ -154,9 +165,10 @@ PYBIND11_MODULE(_gameplayfootball, m) {
       .def_readwrite("render_resolution_y",
                      &GameConfig::render_resolution_y);
 
-  // TODO: Make sure it is noncopyable
-  py::class_<ScenarioConfig, SHARED_PTR<ScenarioConfig> >(m, "ScenarioConfig")
-      .def_static("make", &ScenarioConfig::make)
+  class_<ScenarioConfig, SHARED_PTR<ScenarioConfig>, boost::noncopyable>(
+      "ScenarioConfig", no_init)
+      .def("make", &ScenarioConfig::make)
+      .staticmethod("make")
       .def_readwrite("ball_position", &ScenarioConfig::ball_position)
       .def_readwrite("left_team", &ScenarioConfig::left_team)
       .def_readwrite("right_team", &ScenarioConfig::right_team)
@@ -184,23 +196,24 @@ PYBIND11_MODULE(_gameplayfootball, m) {
       .def_readwrite("second_half", &ScenarioConfig::second_half)
       .def_readwrite("control_all_players",
                      &ScenarioConfig::control_all_players)
-      .def_property_readonly("dynamic_player_selection",
+      .def_readonly("dynamic_player_selection",
                     &ScenarioConfig::DynamicPlayerSelection)
-      .def_property_readonly("controllable_left_players",
+      .def_readonly("controllable_left_players",
                     &ScenarioConfig::ControllableLeftPlayers)
-      .def_property_readonly("controllable_right_players",
+      .def_readonly("controllable_right_players",
                     &ScenarioConfig::ControllableRightPlayers);
 
-  py::bind_vector<std::vector<FormationEntry> >(m, "FormationEntryVec");
+  class_<std::vector<FormationEntry> >("FormationEntryVec").def(
+      vector_indexing_suite<std::vector<FormationEntry> >());
 
-  py::class_<FormationEntry>(m, "FormationEntry")
-      .def(py::init<float, float, e_PlayerRole, bool, bool>())
+  class_<FormationEntry>("FormationEntry",
+                         init<float, float, e_PlayerRole, bool, bool>())
       .def_readonly("role", &FormationEntry::role)
-      .def_property_readonly("position", &FormationEntry::position_env)
+      .add_property("position", &FormationEntry::position_env)
       .def_readwrite("lazy", &FormationEntry::lazy)
       .def_readwrite("controllable", &FormationEntry::controllable);
 
-  py::enum_<e_PlayerRole>(m, "e_PlayerRole", py::arithmetic())
+  enum_<e_PlayerRole>("e_PlayerRole")
       .value("e_PlayerRole_GK", e_PlayerRole::e_PlayerRole_GK)
       .value("e_PlayerRole_CB", e_PlayerRole::e_PlayerRole_CB)
       .value("e_PlayerRole_LB", e_PlayerRole::e_PlayerRole_LB)
@@ -212,12 +225,12 @@ PYBIND11_MODULE(_gameplayfootball, m) {
       .value("e_PlayerRole_AM", e_PlayerRole::e_PlayerRole_AM)
       .value("e_PlayerRole_CF", e_PlayerRole::e_PlayerRole_CF);
 
-  py::enum_<e_RenderingMode>(m, "e_RenderingMode", py::arithmetic())
+  enum_<e_RenderingMode>("e_RenderingMode")
       .value("e_Disabled", e_RenderingMode::e_Disabled)
       .value("e_Onscreen", e_RenderingMode::e_Onscreen)
       .value("e_Offscreen", e_RenderingMode::e_Offscreen);
 
-  py::enum_<e_GameMode>(m, "e_GameMode", py::arithmetic())
+  enum_<e_GameMode>("e_GameMode")
       .value("e_GameMode_Normal", e_GameMode::e_GameMode_Normal)
       .value("e_GameMode_KickOff", e_GameMode::e_GameMode_KickOff)
       .value("e_GameMode_GoalKick", e_GameMode::e_GameMode_GoalKick)
@@ -226,43 +239,42 @@ PYBIND11_MODULE(_gameplayfootball, m) {
       .value("e_GameMode_ThrowIn", e_GameMode::e_GameMode_ThrowIn)
       .value("e_GameMode_Penalty", e_GameMode::e_GameMode_Penalty);
 
-  // TODO: Check in what cases it is required to add py::arithmetic()
-  py::enum_<Action>(m, "e_BackendAction", py::arithmetic())
-      .value("idle", Action::game_idle)
-      .value("left", Action::game_left)
-      .value("top_left", Action::game_top_left)
-      .value("top", Action::game_top)
-      .value("top_right", Action::game_top_right)
-      .value("right", Action::game_right)
-      .value("bottom_right", Action::game_bottom_right)
-      .value("bottom", Action::game_bottom)
-      .value("bottom_left", Action::game_bottom_left)
-      .value("long_pass", Action::game_long_pass)
-      .value("high_pass", Action::game_high_pass)
-      .value("short_pass", Action::game_short_pass)
-      .value("shot", Action::game_shot)
-      .value("keeper_rush", Action::game_keeper_rush)
-      .value("sliding", Action::game_sliding)
-      .value("pressure", Action::game_pressure)
-      .value("team_pressure", Action::game_team_pressure)
-      .value("switch", Action::game_switch)
-      .value("sprint", Action::game_sprint)
-      .value("dribble", Action::game_dribble)
-      .value("release_direction", Action::game_release_direction)
-      .value("release_long_pass", Action::game_release_long_pass)
-      .value("release_high_pass", Action::game_release_high_pass)
-      .value("release_short_pass", Action::game_release_short_pass)
-      .value("release_shot", Action::game_release_shot)
-      .value("release_keeper_rush", Action::game_release_keeper_rush)
-      .value("release_sliding", Action::game_release_sliding)
-      .value("release_pressure", Action::game_release_pressure)
-      .value("release_team_pressure", Action::game_release_team_pressure)
-      .value("release_switch", Action::game_release_switch)
-      .value("release_sprint", Action::game_release_sprint)
-      .value("release_dribble", Action::game_release_dribble)
-      .value("builtin_ai", Action::game_builtin_ai);
+  enum_<Action>("e_BackendAction")
+    .value("idle", Action::game_idle)
+    .value("left", Action::game_left)
+    .value("top_left", Action::game_top_left)
+    .value("top", Action::game_top)
+    .value("top_right", Action::game_top_right)
+    .value("right", Action::game_right)
+    .value("bottom_right", Action::game_bottom_right)
+    .value("bottom", Action::game_bottom)
+    .value("bottom_left", Action::game_bottom_left)
+    .value("long_pass", Action::game_long_pass)
+    .value("high_pass", Action::game_high_pass)
+    .value("short_pass", Action::game_short_pass)
+    .value("shot", Action::game_shot)
+    .value("keeper_rush", Action::game_keeper_rush)
+    .value("sliding", Action::game_sliding)
+    .value("pressure", Action::game_pressure)
+    .value("team_pressure", Action::game_team_pressure)
+    .value("switch", Action::game_switch)
+    .value("sprint", Action::game_sprint)
+    .value("dribble", Action::game_dribble)
+    .value("release_direction", Action::game_release_direction)
+    .value("release_long_pass", Action::game_release_long_pass)
+    .value("release_high_pass", Action::game_release_high_pass)
+    .value("release_short_pass", Action::game_release_short_pass)
+    .value("release_shot", Action::game_release_shot)
+    .value("release_keeper_rush", Action::game_release_keeper_rush)
+    .value("release_sliding", Action::game_release_sliding)
+    .value("release_pressure", Action::game_release_pressure)
+    .value("release_team_pressure", Action::game_release_team_pressure)
+    .value("release_switch", Action::game_release_switch)
+    .value("release_sprint", Action::game_release_sprint)
+    .value("release_dribble", Action::game_release_dribble)
+    .value("builtin_ai", Action::game_builtin_ai);
 
-  py::enum_<e_Team>(m, "e_Team")
+  enum_<e_Team>("e_Team")
       .value("e_Left", e_Team::e_Left)
       .value("e_Right", e_Team::e_Right);
 }

@@ -37,7 +37,7 @@ As for the C++ engine dependencies (`boost`, `SDL`, etc.), you don't have to ins
 Next, run the following lines in the command prompt to install Google Research Football environment:
 ```commandline
 :: Clone the repository
-git clone --recurse-submodules https://github.com/google-research/football.git
+git clone https://github.com/google-research/football.git
 cd football
 :: Set VCPKG_ROOT environment variable that points to vcpkg installation
 set VCPKG_ROOT=C:\dev\vcpkg\
@@ -69,7 +69,7 @@ python3 -m pip install psutil
 ```
 Clone the repository and navigate to the directory:
 ```shell
-git clone --recurse-submodules https://github.com/google-research/football.git
+git clone https://github.com/google-research/football.git
 cd football
 ```
 
@@ -82,11 +82,7 @@ create a virtual environment with `$(brew --prefix python3)/bin/python3 -m venv 
 you might need to deactivate base environment beforehand `conda deactivate`. 
 
 It is possible to use `conda` to create a virtual environment, but make sure that you select the same version of Python 
-that was used to build `boost-python` (`3.9` as of January 2022):
-```shell
-conda create --name football-env python=3.9 -y
-conda activate football-env
-```
+that was used to build `boost-python3` (`3.9` as of February 2022).
 
 ### Create virtual environment and build the game
 Use [virtual environment](https://docs.python.org/3/tutorial/venv.html) to avoid messing up with global dependencies:
@@ -94,7 +90,18 @@ Use [virtual environment](https://docs.python.org/3/tutorial/venv.html) to avoid
 ```shell
 python3 -m venv football-env
 source football-env/bin/activate
+```
+If you decide to use `conda` environment, use the following commands instead:
 
+```shell
+conda create --name football-env python=3.9 -y
+conda activate football-env
+```
+
+Upgrade `pip`, `setuptools`, `wheel` and install `psutil` inside the virtual environment:
+```shell
+python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install psutil
 ```
 
 Finally, build the game environment:
@@ -118,7 +125,7 @@ python3 -m pip install psutil
 
 Clone the repository and navigate to the directory:
 ```shell
-git clone --recurse-submodules https://github.com/google-research/football.git
+git clone https://github.com/google-research/football.git
 cd football
 ```
 
