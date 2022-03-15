@@ -15,7 +15,6 @@ jobs:
         os: [windows-latest]
         python-version: [ '3.9', '3.10' ]
         architecture: ['x86', 'x64']
-        # Temporarily include windows-2016 builds
         include:
           - os: windows-2016
             python-version: '3.6'
