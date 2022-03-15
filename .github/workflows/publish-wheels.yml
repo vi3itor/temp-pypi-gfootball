@@ -15,10 +15,31 @@ jobs:
         os: [windows-latest]
         python-version: [ '3.9', '3.10' ]
         architecture: ['x86', 'x64']
+        # Temporarily include windows-2016 builds
         include:
           - os: windows-2016
-            python-version: [ '3.6', '3.7', '3.8']
-            architecture: ['x86', 'x64']
+            python-version: '3.6'
+            architecture: 'x86'
+            experimental: true
+          - os: windows-2016
+            python-version: '3.7'
+            architecture: 'x86'
+            experimental: true
+          - os: windows-2016
+            python-version: '3.8'
+            architecture: 'x86'
+            experimental: true
+          - os: windows-2016
+            python-version: '3.6'
+            architecture: 'x64'
+            experimental: true
+          -os: windows-2016
+            python-version: '3.7'
+            architecture: 'x64'
+            experimental: true
+          -os: windows-2016
+            python-version: '3.8'
+            architecture: 'x64'
             experimental: true
 
     env:
