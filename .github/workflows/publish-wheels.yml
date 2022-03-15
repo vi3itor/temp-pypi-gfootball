@@ -21,8 +21,8 @@ jobs:
             architecture: 'x86'
             experimental: true
           - os: windows-2016
-            python-version: '3.7'
-            architecture: 'x86'
+            python-version: '3.6'
+            architecture: 'x64'
             experimental: true
 
     env:

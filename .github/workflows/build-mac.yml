@@ -1,14 +1,14 @@
 name: Build gfootball on Mac
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'gfootball/doc/**'
-      - '*.md'
-      - '.dockerignore'
-      - '.gitignore'
+#  push:
+#    branches:
+#      - main
+#    paths-ignore:
+#      - 'gfootball/doc/**'
+#      - '*.md'
+#      - '.dockerignore'
+#      - '.gitignore'
   workflow_dispatch:
 
 jobs:
