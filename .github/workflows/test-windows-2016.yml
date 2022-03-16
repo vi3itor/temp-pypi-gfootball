@@ -1,0 +1,14 @@
+name: Test if windows-2016 VM is still alive
+
+on:
+  schedule:
+    - cron: '30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  test-windows-2016-vm:
+    runs-on: windows-2016
+    steps:
+      - name: Print alive message
+        run: echo "Windows 2016 VM is alive"
+        shell: cmd
