@@ -167,7 +167,7 @@ packages = find_packages() + find_packages('third_party')
 
 setup(
     name='test-pypi-gfootball',
-    version='2.10.3b5',
+    version='2.10.3b6',
     description=('Test version of Google Research Football - RL environment based on '
                  'open-source game Gameplay Football. Used for testing CI builds and wheel deployment.'),
     long_description=('Please see [our GitHub page](https://github.com/google-research/football) '
